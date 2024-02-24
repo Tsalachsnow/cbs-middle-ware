@@ -1,5 +1,8 @@
 package com.cbs.middleware.controller;
 
+import com.cbs.middleware.model.TransactionRequest;
+import com.cbs.middleware.model.TransactionUpdate;
+import com.cbs.middleware.service.interfaces.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/transaction")
-public class cbsController {
+public class RetailApplicationController {
 
     private final TransactionService transactionService;
 
