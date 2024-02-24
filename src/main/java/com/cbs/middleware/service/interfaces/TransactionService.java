@@ -1,11 +1,12 @@
 package com.cbs.middleware.service.interfaces;
 
-import com.cbs.middleware.model.TransactionRequest;
-import com.cbs.middleware.model.TransactionUpdate;
+import com.cbs.middleware.dto.ProcessingResponse;
+import com.cbs.middleware.dto.TransactionRequest;
+import com.cbs.middleware.dto.TransactionResponse;
+import com.cbs.middleware.dto.TransactionUpdateRequest;
+import com.cbs.middleware.model.Transaction;
 
 public interface TransactionService {
-   String initiateTransaction(TransactionRequest request);
-    void processTransactionUpdate(TransactionUpdate update);
-    String processTransaction(TransactionRequest request);
-    void sendTransactionUpdate(TransactionUpdate update);
+    ProcessingResponse processTransaction(TransactionRequest request);
+    boolean duplicateCheck(String requestId);
 }
