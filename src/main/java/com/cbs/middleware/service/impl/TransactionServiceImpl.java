@@ -17,10 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Slf4j
@@ -29,9 +33,10 @@ import java.util.Optional;
 public class TransactionServiceImpl implements TransactionService {
     @Value("${web.hook.url}")
     private String webhookUrl;
+
     private final TransactionRepository tranRepository;
     RestTemplate restTemplate = new RestTemplate();
-    public ProcessingResponse processTransaction(TransactionRequest request) {
+    public ProcessingResponse processTransaction(TransactionRequest request, HttpServletRequest httpServletRequest) {
        log.info("Processing Request:: "+ JsonConverter.toJson(request, true));
         ProcessingResponse response = new ProcessingResponse();
         TransactionUpdateRequest webhookRequest = new TransactionUpdateRequest();
@@ -68,7 +73,7 @@ public class TransactionServiceImpl implements TransactionService {
                       .setResponseMessage(tran.getResponseMessage())
                       .setResponseCode(tran.getResponseCode());
 
-              String webResponse = updateWebHook(webhookRequest);
+              String webResponse = updateWebHook(webhookRequest, httpServletRequest);
 
               response.setMessage(validate)
                       .setStatusCode(HttpStatus.EXPECTATION_FAILED.value());
@@ -87,7 +92,7 @@ public class TransactionServiceImpl implements TransactionService {
                       .setResponseMessage(tran.getResponseMessage())
                       .setResponseCode(tran.getResponseCode());
 
-              String webResponse = updateWebHook(webhookRequest);
+              String webResponse = updateWebHook(webhookRequest, httpServletRequest);
                 // make the transfer
               response.setMessage("Transaction Approved")
                         .setStatusCode(HttpStatus.OK.value())
@@ -106,9 +111,19 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
-    public String updateWebHook(TransactionUpdateRequest request){
+    public String updateWebHook(TransactionUpdateRequest request, HttpServletRequest httpServletRequest){
         log.info("Updating webhook::::::::");
-        return restTemplate.postForObject(webhookUrl, request, String.class);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Api-Key", httpServletRequest.getHeader("Api-Key"));
+        try{
+            HttpEntity<TransactionUpdateRequest> requestEntity = new HttpEntity<>(request, headers);
+            return restTemplate.postForObject(webhookUrl, requestEntity, String.class);
+        }catch(Exception e){
+            log.info("Error Occurred:: {}", ExceptionUtils.getStackTrace(e));
+            return "Processing Failed";
+        }
     }
 
 }

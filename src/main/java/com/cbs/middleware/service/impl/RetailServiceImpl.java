@@ -1,7 +1,6 @@
 package com.cbs.middleware.service.impl;
 
 import com.cbs.middleware.dto.*;
-import com.cbs.middleware.model.Transaction;
 import com.cbs.middleware.model.TransactionUpdate;
 import com.cbs.middleware.repositories.TransactionRepository;
 import com.cbs.middleware.repositories.TransactionUpdateRepository;
@@ -9,11 +8,14 @@ import com.cbs.middleware.service.interfaces.RetailService;
 import com.cbs.middleware.util.JsonConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,10 +27,21 @@ public class RetailServiceImpl implements RetailService {
     private final TransactionUpdateRepository webhookRepository;
     RestTemplate restTemplate = new RestTemplate();
 
-    public TransactionResponse initiateTransaction(TransactionRequest request) {
+    public TransactionResponse initiateTransaction(TransactionRequest request, HttpServletRequest httpServletRequest) {
         log.info("Initiate Transaction Request:: "+ JsonConverter.toJson(request, true));
         TransactionResponse response = new TransactionResponse();
-            ProcessingResponse resp = restTemplate.postForObject(processingUrl, request, ProcessingResponse.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Api-Key", httpServletRequest.getHeader("Api-Key"));
+        ProcessingResponse resp = null;
+        try{
+            HttpEntity<TransactionRequest> requestEntity = new HttpEntity<>(request, headers);
+            resp = restTemplate.postForObject(processingUrl, requestEntity, ProcessingResponse.class);
+        }catch(Exception e){
+            log.info("Error Occurred:: {}", ExceptionUtils.getStackTrace(e));
+            response.setResponseCode("E04").setResponseMessage("Processing Failed");
+            return response;
+        }
             if(resp.getStatusCode() == 200){
                 response.setResponseCode("000").setResponseMessage(resp.getMessage())
                         .setPaymentReference(resp.getTransaction().getPaymentReference());
@@ -39,7 +52,7 @@ public class RetailServiceImpl implements RetailService {
             return response;
     }
 
-    public void processTransactionUpdate(TransactionUpdateRequest update) {
+    public void processTransactionUpdate(TransactionUpdateRequest update, HttpServletRequest httpServletRequest) {
         log.info("Webhook Request:: "+ JsonConverter.toJson(update, true));
         // Mock implementation to process transaction update
         TransactionUpdate transactionUpdate = new TransactionUpdate()
@@ -52,7 +65,7 @@ public class RetailServiceImpl implements RetailService {
         System.out.println("Received transaction update: " + update);
     }
 
-    public TransactionUpdateResponse getStatus(String paymentReference){
+    public TransactionUpdateResponse getStatus(String paymentReference, HttpServletRequest httpServletRequest){
         TransactionUpdateResponse response = new TransactionUpdateResponse();
         log.info("paymentReference:: "+ paymentReference);
         TransactionUpdate transactionUpdate = webhookRepository.findByPaymentReference(paymentReference);

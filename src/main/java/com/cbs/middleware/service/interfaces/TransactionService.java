@@ -6,7 +6,9 @@ import com.cbs.middleware.dto.TransactionResponse;
 import com.cbs.middleware.dto.TransactionUpdateRequest;
 import com.cbs.middleware.model.Transaction;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface TransactionService {
-    ProcessingResponse processTransaction(TransactionRequest request);
+    ProcessingResponse processTransaction(TransactionRequest request, HttpServletRequest httpServletRequest);
     boolean duplicateCheck(String requestId);
 }
