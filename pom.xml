@@ -20,7 +20,6 @@
         <build.final.name>Referral-Reward-Service</build.final.name>
     </properties>
     <dependencies>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
