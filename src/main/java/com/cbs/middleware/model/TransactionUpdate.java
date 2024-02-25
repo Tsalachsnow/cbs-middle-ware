@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -16,8 +18,10 @@ public class TransactionUpdate {
     private Long id;
     private String status;
     private String transactionId;
+    private String countryCode;
     private String responseCode;
     private String responseMessage;
     private String transactionReference;
     private String paymentReference;
+    private LocalDateTime tranDate;
 }

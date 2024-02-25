@@ -5,6 +5,8 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -29,4 +31,5 @@ public class Transaction {
     private String status;
     private String responseMessage;
     private String responseCode;
+    private LocalDateTime tranDate;
 }
