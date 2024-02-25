@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -60,7 +61,9 @@ public class RetailServiceImpl implements RetailService {
                 .setTransactionReference(update.getTransactionReference())
                 .setStatus(update.getStatus()).setResponseCode(update.getResponseCode())
                 .setResponseMessage(update.getResponseMessage())
-                .setPaymentReference(update.getPaymentReference());
+                .setPaymentReference(update.getPaymentReference())
+                .setTranDate(LocalDateTime.now())
+                .setCountryCode(update.getCountryCode());
         webhookRepository.save(transactionUpdate);
         System.out.println("Received transaction update: " + update);
     }

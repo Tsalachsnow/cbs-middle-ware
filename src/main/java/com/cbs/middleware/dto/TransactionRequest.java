@@ -13,6 +13,7 @@ public class TransactionRequest {
     private String debitAccountType;
     private String creditAccountNo;
     private String currencyCode;
+    private String countryCode;
     private String paymentDescription;
     private String tranType;
     private String paymentReference;

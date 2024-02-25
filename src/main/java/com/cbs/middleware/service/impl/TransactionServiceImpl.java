@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Slf4j
@@ -48,9 +50,11 @@ public class TransactionServiceImpl implements TransactionService {
                 .setDebitAccountNo(request.getDebitAccountNo())
                 .setCreditAccountNo(request.getCreditAccountNo())
                 .setCurrencyCode(request.getCurrencyCode())
+                .setCountryCode(request.getCountryCode())
                 .setExchRate(request.getExchRate())
                 .setPaymentDescription(request.getPaymentDescription())
-                .setPaymentReference(request.getPaymentReference());
+                .setPaymentReference(request.getPaymentReference())
+                .setTranDate(LocalDateTime.now());
 
         boolean duplicate = duplicateCheck(tran.getPaymentReference());
         if(duplicate){
@@ -67,11 +71,12 @@ public class TransactionServiceImpl implements TransactionService {
               tran.setStatus("FAILED").setResponseCode("E93").setResponseMessage(validate);
               tranRepository.save(tran);
               webhookRequest.setTransactionId(tran.getPaymentReference())
-                      .setPaymentReference(tran.getPaymentReference())
+                      .setPaymentReference(tran.getCountryCode()+"_"+tran.getPaymentReference())
                       .setTransactionReference(tran.getPaymentReference())
                       .setStatus(tran.getStatus())
                       .setResponseMessage(tran.getResponseMessage())
-                      .setResponseCode(tran.getResponseCode());
+                      .setResponseCode(tran.getResponseCode())
+                      .setCountryCode(tran.getCountryCode());
 
               String webResponse = updateWebHook(webhookRequest, httpServletRequest);
 
@@ -86,11 +91,12 @@ public class TransactionServiceImpl implements TransactionService {
                 tranRepository.save(tran);
 
               webhookRequest.setTransactionId(tran.getPaymentReference())
-                      .setPaymentReference(tran.getPaymentReference())
+                      .setPaymentReference(tran.getCountryCode()+"_"+tran.getPaymentReference())
                       .setTransactionReference(tran.getPaymentReference())
                       .setStatus(tran.getStatus())
                       .setResponseMessage(tran.getResponseMessage())
-                      .setResponseCode(tran.getResponseCode());
+                      .setResponseCode(tran.getResponseCode())
+                      .setCountryCode(tran.getCountryCode());
 
               String webResponse = updateWebHook(webhookRequest, httpServletRequest);
                 // make the transfer
