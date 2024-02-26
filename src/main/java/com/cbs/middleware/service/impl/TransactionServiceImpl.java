@@ -33,8 +33,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class TransactionServiceImpl implements TransactionService {
-    @Value("${web.hook.url}")
-    private String webhookUrl;
 
     private final TransactionRepository tranRepository;
     RestTemplate restTemplate = new RestTemplate();
@@ -71,12 +69,14 @@ public class TransactionServiceImpl implements TransactionService {
               tran.setStatus("FAILED").setResponseCode("E93").setResponseMessage(validate);
               tranRepository.save(tran);
               webhookRequest.setTransactionId(tran.getPaymentReference())
-                      .setPaymentReference(tran.getCountryCode()+"_"+tran.getPaymentReference())
-                      .setTransactionReference(tran.getPaymentReference())
+                      .setPaymentReference(tran.getPaymentReference())
+                      .setTransactionReference(tran.getCountryCode()+"_"+tran.getPaymentReference())
                       .setStatus(tran.getStatus())
                       .setResponseMessage(tran.getResponseMessage())
                       .setResponseCode(tran.getResponseCode())
-                      .setCountryCode(tran.getCountryCode());
+                      .setCountryCode(tran.getCountryCode())
+                      .setCallBackUrl(request.getCallBackUrl());
+              log.info("Webhook Request:: "+ JsonConverter.toJson(webhookRequest, true));
 
               String webResponse = updateWebHook(webhookRequest, httpServletRequest);
 
@@ -91,12 +91,14 @@ public class TransactionServiceImpl implements TransactionService {
                 tranRepository.save(tran);
 
               webhookRequest.setTransactionId(tran.getPaymentReference())
-                      .setPaymentReference(tran.getCountryCode()+"_"+tran.getPaymentReference())
-                      .setTransactionReference(tran.getPaymentReference())
+                      .setPaymentReference(tran.getPaymentReference())
+                      .setTransactionReference(tran.getCountryCode()+"_"+tran.getPaymentReference())
                       .setStatus(tran.getStatus())
                       .setResponseMessage(tran.getResponseMessage())
                       .setResponseCode(tran.getResponseCode())
-                      .setCountryCode(tran.getCountryCode());
+                      .setCountryCode(tran.getCountryCode())
+                      .setCallBackUrl(request.getCallBackUrl());
+              log.info("Webhook Request:: "+ JsonConverter.toJson(webhookRequest, true));
 
               String webResponse = updateWebHook(webhookRequest, httpServletRequest);
                 // make the transfer
@@ -119,7 +121,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     public String updateWebHook(TransactionUpdateRequest request, HttpServletRequest httpServletRequest){
         log.info("Updating webhook::::::::");
-
+String webhookUrl = request.getCallBackUrl();
+log.info("URL:: " + webhookUrl);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Api-Key", httpServletRequest.getHeader("Api-Key"));

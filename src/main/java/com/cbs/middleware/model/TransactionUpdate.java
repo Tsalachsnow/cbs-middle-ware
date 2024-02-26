@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @SequenceGenerator(name = "stat_id_seq", sequenceName = "stat_id_seq", allocationSize = 1, initialValue = 100)
 public class TransactionUpdate {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tran_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stat_id_seq")
     private Long id;
     private String status;
     private String transactionId;

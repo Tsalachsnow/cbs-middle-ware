@@ -17,6 +17,7 @@ public class Validations {
                                                         (request.getTranType() == null || request.getTranType().isEmpty())? "transaction type field is required":
                                                                 (request.getExchRate() == null || request.getExchRate().compareTo(BigDecimal.ZERO) < 0)? "invalid exchange rate" :
                                                                         (request.getAmount().compareTo(BigDecimal.ZERO) < 0)? "invalid amount": (request.getCreditAccountNo().length() < 4)? "invalid account number "+ request.getCreditAccountNo():
-                                                                                (request.getDebitAccountNo().length() < 4)? "invalid account number "+ request.getDebitAccountNo():"success";
+                                                                                (request.getDebitAccountNo().length() < 4)? "invalid account number "+ request.getDebitAccountNo():
+                                                                                        (request.getCallBackUrl() == null || request.getCallBackUrl().isEmpty())? "Please Provide Call back Url":"success";
     }
 }

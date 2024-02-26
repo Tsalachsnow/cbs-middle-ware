@@ -15,4 +15,5 @@ public class TransactionUpdateRequest {
     private String responseMessage;
     private String transactionReference;
     private String paymentReference;
+    private String callBackUrl;
 }
