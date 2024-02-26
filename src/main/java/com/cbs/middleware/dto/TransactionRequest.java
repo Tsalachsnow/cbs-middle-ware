@@ -18,4 +18,5 @@ public class TransactionRequest {
     private String tranType;
     private String paymentReference;
     private BigDecimal exchRate;
+    private String callBackUrl;
 }
