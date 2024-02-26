@@ -60,7 +60,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("CBS Middleware API Documentation")
-                .description("Documentation for CBS Middleware API endpoints")
+                .description("Documentation for CBS Middleware API endpoints\n" +"\n"+"Call Back Url: http://localhost:9052/api/transaction/webhook")
                 .version("1.0")
                 .build();
     }
