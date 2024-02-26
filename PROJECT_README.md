@@ -38,13 +38,18 @@ Password: test
 General Request Mapping: /api/transaction
 
 #### Retail API Endpoints:
+##### 1. Endpoint to initiate transaction
 * POST /initiate : Initiates a new transaction.
+
+##### 2. Endpoint to get transaction status
 
 * GET /get-transaction-status/{paymentReference : Retrieves the status of a transaction.
 
+##### 3. Call back Url
+
 * POST /webhook : Receives webhook notifications for transaction updates.
 
-#### Payment Gateway Endpoint:
+##### 4. Payment Gateway Endpoint:
 * POST /process
 
 #### Authentication
