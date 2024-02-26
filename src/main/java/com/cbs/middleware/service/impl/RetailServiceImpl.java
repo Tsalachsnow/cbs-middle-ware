@@ -64,7 +64,12 @@ public class RetailServiceImpl implements RetailService {
                 .setPaymentReference(update.getPaymentReference())
                 .setTranDate(LocalDateTime.now())
                 .setCountryCode(update.getCountryCode());
-        webhookRepository.save(transactionUpdate);
+        log.info("Request for webhook update:: "+ JsonConverter.toJson(transactionUpdate, true));
+        try{
+            webhookRepository.save(transactionUpdate);
+        }catch(Exception e){
+          log.info("Error occurred:: " + ExceptionUtils.getStackTrace(e));
+        }
         System.out.println("Received transaction update: " + update);
     }
 
@@ -72,6 +77,7 @@ public class RetailServiceImpl implements RetailService {
         TransactionUpdateResponse response = new TransactionUpdateResponse();
         log.info("paymentReference:: "+ paymentReference);
         TransactionUpdate transactionUpdate = webhookRepository.findByPaymentReference(paymentReference);
+        log.info("Transaction Update Returned:: "+ JsonConverter.toJson(transactionUpdate, true));
         response.setResponseCode(transactionUpdate.getResponseCode())
                     .setResponseMessage(transactionUpdate.getResponseMessage())
                     .setStatus(transactionUpdate.getStatus())
