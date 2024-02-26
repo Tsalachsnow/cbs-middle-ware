@@ -33,8 +33,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class TransactionServiceImpl implements TransactionService {
-    @Value("${web.hook.url}")
-    private String webhookUrl;
 
     private final TransactionRepository tranRepository;
     RestTemplate restTemplate = new RestTemplate();
@@ -76,7 +74,8 @@ public class TransactionServiceImpl implements TransactionService {
                       .setStatus(tran.getStatus())
                       .setResponseMessage(tran.getResponseMessage())
                       .setResponseCode(tran.getResponseCode())
-                      .setCountryCode(tran.getCountryCode());
+                      .setCountryCode(tran.getCountryCode())
+                      .setCallBackUrl(request.getCallBackUrl());
 
               String webResponse = updateWebHook(webhookRequest, httpServletRequest);
 
@@ -96,7 +95,8 @@ public class TransactionServiceImpl implements TransactionService {
                       .setStatus(tran.getStatus())
                       .setResponseMessage(tran.getResponseMessage())
                       .setResponseCode(tran.getResponseCode())
-                      .setCountryCode(tran.getCountryCode());
+                      .setCountryCode(tran.getCountryCode())
+                      .setCallBackUrl(request.getCallBackUrl());
 
               String webResponse = updateWebHook(webhookRequest, httpServletRequest);
                 // make the transfer
@@ -119,7 +119,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     public String updateWebHook(TransactionUpdateRequest request, HttpServletRequest httpServletRequest){
         log.info("Updating webhook::::::::");
-
+String webhookUrl = request.getCallBackUrl();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Api-Key", httpServletRequest.getHeader("Api-Key"));
