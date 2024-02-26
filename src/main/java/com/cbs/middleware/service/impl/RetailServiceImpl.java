@@ -67,17 +67,22 @@ public class RetailServiceImpl implements RetailService {
         log.info("Request for webhook update:: "+ JsonConverter.toJson(transactionUpdate, true));
         try{
             webhookRepository.save(transactionUpdate);
-        }catch(Exception e){
+        }catch(Throwable e){
           log.info("Error occurred:: " + ExceptionUtils.getStackTrace(e));
         }
         System.out.println("Received transaction update: " + update);
     }
 
     public TransactionUpdateResponse getStatus(String paymentReference, HttpServletRequest httpServletRequest){
+
         TransactionUpdateResponse response = new TransactionUpdateResponse();
         log.info("paymentReference:: "+ paymentReference);
         TransactionUpdate transactionUpdate = webhookRepository.findByPaymentReference(paymentReference);
         log.info("Transaction Update Returned:: "+ JsonConverter.toJson(transactionUpdate, true));
+        if(null == transactionUpdate){
+            return response.setResponseCode("E92")
+                    .setResponseMessage("Payment Reference Not Found");
+        }
         response.setResponseCode(transactionUpdate.getResponseCode())
                     .setResponseMessage(transactionUpdate.getResponseMessage())
                     .setStatus(transactionUpdate.getStatus())

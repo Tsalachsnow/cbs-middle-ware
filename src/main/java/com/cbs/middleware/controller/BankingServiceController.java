@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URISyntaxException;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,7 +20,7 @@ public class BankingServiceController {
 
     @ApiOperation(value = "Endpoint for Processing Transaction", notes = "Process a transaction")
     @PostMapping("/process")
-    public ResponseEntity<ProcessingResponse> processTransaction(@RequestBody TransactionRequest request, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ProcessingResponse> processTransaction(@RequestBody TransactionRequest request, HttpServletRequest httpServletRequest) throws URISyntaxException {
         ProcessingResponse response = transactionService.processTransaction(request, httpServletRequest);
         return ResponseEntity.ok(response);
     }
